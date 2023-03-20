@@ -42,9 +42,9 @@ async function bootstrap(): Promise<void> {
   app.set('trust proxy', true);
 
   const options = new DocumentBuilder()
-    .setTitle('GP')
+    .setTitle('Lazy Chat API')
     .setDescription('API description')
-    .setVersion('1.0')
+    .setVersion('0.1')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);
