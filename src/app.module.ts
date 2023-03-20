@@ -6,11 +6,12 @@ import * as winston from 'winston';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
-import { HealthModule } from './modules/health/health.module';
-
 import { AppController } from './app.controller';
 import { TypeOrmConfigService } from './config';
 import { HttpExceptionFilter } from './utils';
+
+import { HealthModule } from './modules/health/health.module';
+import { MessagesModule } from './modules/messages/messages.module';
 
 @Module({
   providers: [
@@ -69,6 +70,7 @@ import { HttpExceptionFilter } from './utils';
       limit: 200,
     }),
     HealthModule,
+    MessagesModule,
   ],
   controllers: [AppController],
 })

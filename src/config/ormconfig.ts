@@ -1,7 +1,7 @@
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-import { CreateMessagesTable1679250841489 } from '../migrations/1679250841489-create-message-table';
+import { CreateMessagesTable1679250841489 } from '../migrations/1679250841489-create-messages-table';
 
 import { MessageEntity } from '../modules/messages/entities/message.entity';
 
