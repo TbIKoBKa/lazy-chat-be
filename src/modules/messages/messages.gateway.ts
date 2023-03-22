@@ -15,15 +15,20 @@ import { Server, Socket } from 'socket.io';
 })
 export class MessagesGateway {
   @WebSocketServer()
-  server: Server;
+  private readonly server: Server;
 
   constructor(private readonly messageService: MessagesService) {}
 
-  @SubscribeMessage('createMessage')
-  async create(@MessageBody() createMessageDto: CreateMessageDto) {
-    const createdMessage = await this.messageService.create(createMessageDto);
+  async handleConnection(client: Socket) {
+    this.messageService.getConnectedClientsCount(this.server);
 
-    this.server.sockets.emit('createMessage', createdMessage);
+    const messages = await this.messageService.findAll();
+
+    client.emit('findAllMessage', messages);
+  }
+
+  handleDisconnect() {
+    this.messageService.getConnectedClientsCount(this.server);
   }
 
   @SubscribeMessage('findAllMessage')
@@ -33,6 +38,19 @@ export class MessagesGateway {
     client.emit('findAllMessage', messages);
   }
 
+  @SubscribeMessage('getConnectedClientsCount')
+  async getConnectedClientsCount(@ConnectedSocket() client: Socket) {
+    this.messageService.getConnectedClientsCount(this.server, client);
+  }
+
+  @SubscribeMessage('createMessage')
+  async create(
+    @MessageBody() createMessageDto: CreateMessageDto,
+    @ConnectedSocket() client: Socket
+  ) {
+    return this.messageService.create(createMessageDto, client, this.server);
+  }
+
   @SubscribeMessage('findOneMessage')
   findOne(@MessageBody() id: number) {
     return this.messageService.findOne(id);
@@ -40,11 +58,15 @@ export class MessagesGateway {
 
   @SubscribeMessage('updateMessage')
   update(@MessageBody() updateMessageDto: UpdateMessageDto) {
-    return this.messageService.update(updateMessageDto.id, updateMessageDto);
+    return this.messageService.update(
+      updateMessageDto.id,
+      updateMessageDto,
+      this.server
+    );
   }
 
   @SubscribeMessage('removeMessage')
   remove(@MessageBody() id: number) {
-    return this.messageService.remove(id);
+    return this.messageService.remove(id, this.server);
   }
 }
